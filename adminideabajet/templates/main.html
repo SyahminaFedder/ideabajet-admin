@@ -19,6 +19,7 @@
   </div>
 </header>
 
+<!-- Navigation Section -->
 <div class="container">
   <div class="sidebar">
     <ul>
@@ -37,10 +38,17 @@
   </div>
 
   <div class="main-content">
+
+    <!-- Message container -->
+   {% if message %}
+  <div id="message-box" style="padding:10px; background-color:#d4edda; color:#155724; border:1px solid #c3e6cb; margin-bottom: 15px;">
+    {{ message }}
+  </div>
+  {% endif %}
+
     <!-- Dashboard Section -->
     <div id="dashboard" class="content-section active">
       <h2>Dashboard</h2>
-      <p>Welcome to Idea Bajet 2027 Management System</p>
     </div>
 
     <!-- Aset Section -->
@@ -111,7 +119,7 @@
       </table>
     </div>
 
-    <!-- E1 Section -->
+    <!-- Elemen1 Section -->
     <div id="e1" class="content-section">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e1')">Create</button>
@@ -145,7 +153,7 @@
       </table>
     </div>
 
-    <!-- E2 Section -->
+    <!-- Elemen2 Section -->
     <div id="e2" class="content-section">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e2')">Create</button>
@@ -179,7 +187,7 @@
       </table>
     </div>
 
-    <!-- E3 Section -->
+    <!-- Elemen3 Section -->
     <div id="e3" class="content-section">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e3')">Create</button>
@@ -213,7 +221,7 @@
       </table>
     </div>
 
-    <!-- E4 Section -->
+    <!-- Elemen4 Section -->
     <div id="e4" class="content-section">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e4')">Create</button>
@@ -247,7 +255,7 @@
       </table>
     </div>
 
-    <!-- E5 Section -->
+    <!-- Elemen5 Section -->
     <div id="e5" class="content-section">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e5')">Create</button>
@@ -281,7 +289,7 @@
       </table>
     </div>
 
-    <!-- E6 Section -->
+    <!-- Elemen6 Section -->
     <div id="e6" class="content-section">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e6')">Create</button>
@@ -315,7 +323,7 @@
       </table>
     </div>
 
-    <!-- E7 Section -->
+    <!-- Elemen7 Section -->
     <div id="e7" class="content-section">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e7')">Create</button>
@@ -349,7 +357,7 @@
       </table>
     </div>
 
-    <!-- E8 Section -->
+    <!-- Elemen8 Section -->
     <div id="e8" class="content-section">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e8')">Create</button>
@@ -386,6 +394,14 @@
 </div>
 
 <script>
+//Display message for 3 seconds
+  setTimeout(function() {
+      var msg = document.getElementById('message-box');
+      if (msg) {
+        msg.style.display = 'none';
+      }
+    }, 3000);
+
 // Global variables for URLs
 const urls = {
   edit: {

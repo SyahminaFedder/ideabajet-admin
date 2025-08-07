@@ -11,17 +11,15 @@ def login(request):
         try:
             admin = Admin.objects.get(adminid=adminid, password=password)
             request.session['id'] = admin.adminid  # simpan dalam session
-            messages.success(request, "Succesfully Login.", extra_tags='admin')
+            request.session['message'] = 'Login berjaya!'
             return redirect('unified_view')  # redirect to main dashboard
         except Admin.DoesNotExist:
             return render(request, 'login.html', {'message': 'Invalid Admin ID or Password',})
     return render (request,"login.html")
 
-#def dashboard(request):
-    #return render(request,"dashboard.html")
-
 def unified_view(request):
     """Unified view that handles all sections in one template"""
+
     if request.method == 'POST':
         # Handle form submissions for different sections
         if 'aset' in request.POST:
@@ -64,9 +62,12 @@ def unified_view(request):
             liste8 = request.POST.get('e8')
             if liste8:
                 Elemen8.objects.create(e8=liste8)
-        
+
         return redirect('unified_view')
+
     
+    message = request.session.pop('message', None)
+
     # Gather all data
     context = {
         'aset_data': Aset.objects.all(),
@@ -79,24 +80,18 @@ def unified_view(request):
         'e6_data': Elemen6.objects.all(),
         'e7_data': Elemen7.objects.all(),
         'e8_data': Elemen8.objects.all(),
+        'message': message,
     }
-    
+
     return render(request, 'main.html', context)
 
+
 def logout(request):
-    if request.method == 'POST':
-        try:
-            del request.session['id'] 
-        except KeyError:
-            pass 
-        return redirect('login')
-    else:
-        # Handle GET requests as well
-        try:
-            del request.session['id'] 
-        except KeyError:
-            pass 
-        return redirect('login')
+    try:
+        del request.session['id']
+    except KeyError:
+        pass
+    return redirect('login')
 
 # Edit views
 def edit_aset(request, asetid):
