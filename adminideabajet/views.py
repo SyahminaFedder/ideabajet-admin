@@ -13,14 +13,13 @@ def login(request):
         try:
             admin = Admin.objects.get(adminid=adminid, password=password)
             request.session['id'] = admin.adminid  # simpan dalam session
-            messages.success(request, "Succesfully Login.", extra_tags='admin')
-            return HttpResponseRedirect(f"{reverse('unified_view')}?section=dashboard")  # redirect to dashboard section
+            request.session['message'] = 'Login berjaya!'
+            return HttpResponseRedirect(f"{reverse('unified_view')}?section=dashboard")  # redirect to main dashboard
         except Admin.DoesNotExist:
             return render(request, 'login.html', {'message': 'Invalid Admin ID or Password',})
     return render (request,"login.html")
 
-#def dashboard(request):
-    #return render(request,"dashboard.html")
+
 
 def unified_view(request):
     """Unified view that handles all sections in one template"""
@@ -76,10 +75,10 @@ def unified_view(request):
             liste8 = request.POST.get('e8')
             if liste8:
                 Elemen8.objects.create(e8=liste8)
-        
-        # Get the section from the form submission
-        section = request.POST.get('section', 'dashboard')
-        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
+
+        return redirect('unified_view')
+    
+    message = request.session.pop('message', None)
     
     # Gather all data
     # Group aset data by elemen5
@@ -105,6 +104,7 @@ def unified_view(request):
         'e6_data': Elemen6.objects.all(),
         'e7_data': Elemen7.objects.all(),
         'e8_data': Elemen8.objects.all(),
+        'message': message,
         'current_section': section,
     }
     

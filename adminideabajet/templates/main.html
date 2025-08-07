@@ -37,6 +37,13 @@
   </div>
 
   <div class="main-content">
+     <!-- Message container -->
+   {% if message %}
+   <div id="message-box" style="padding:10px; background-color:#d4edda; color:#155724; border:1px solid #c3e6cb; margin-bottom: 15px;">
+     {{ message }}
+   </div>
+   {% endif %}
+
     <!-- Dashboard Section -->
     <div id="dashboard" class="content-section active">
       <h2>Dashboard</h2>
@@ -415,6 +422,14 @@
 </div>
 
 <script>
+//Display message for 3 seconds
+setTimeout(function() {
+      var msg = document.getElementById('message-box');
+      if (msg) {
+        msg.style.display = 'none';
+      }
+    }, 3000);
+    
 // Global variables for URLs
 const urls = {
   edit: {
