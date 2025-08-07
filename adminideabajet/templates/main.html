@@ -22,7 +22,7 @@
 <div class="container">
   <div class="sidebar">
     <ul>
-      <li><a href="#" onclick="showSection('dashboard')" class="nav-link" data-section="dashboard">DASHBOARD</a></li>
+      <li><a onclick="showSection('dashboard')" class="nav-link" data-section="dashboard">DASHBOARD</a></li>
       <li><a href="#" onclick="showSection('aset')" class="nav-link" data-section="aset">ASET</a></li>
       <li><a href="#" onclick="showSection('lokasi')" class="nav-link" data-section="lokasi">LOKASI</a></li>
       <li><a href="#" onclick="showSection('e1')" class="nav-link" data-section="e1">ELEMEN 1: IPOH BANDAR TERBERSIH</a></li>
@@ -40,7 +40,6 @@
     <!-- Dashboard Section -->
     <div id="dashboard" class="content-section active">
       <h2>Dashboard</h2>
-      <p>Welcome to Idea Bajet 2027 Management System</p>
     </div>
 
     <!-- Aset Section -->
@@ -50,28 +49,40 @@
       </div>
       <form id="createForm-aset" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="aset">
+        <select name="elemen5_id" required style="margin-bottom: 10px; padding: 8px; width: 100%;">
+          <option value="">Pilih Elemen 5</option>
+          {% for elemen5 in e5_data %}
+          <option value="{{ elemen5.e5id }}">{{ elemen5.e5 }}</option>
+          {% endfor %}
+        </select>
         <input type="text" name="aset" placeholder="Tambah Aset Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
+      
+      <!-- Single table with 3 columns -->
       <table class="table table-bordered">
         <tr>
-          <th>Senarai Aset</th>
+          <th>Aset</th>
+          <th>Elemen 5</th>
           <th>Action</th>
         </tr>
-        {% for item in aset_data %}
-        <tr id="row-aset-{{ item.asetid }}">
-          <td id="aset-{{ item.asetid }}">{{ item.aset }}</td>
-          <td id="action-aset-{{ item.asetid }}">
-            <button class="btn-create" onclick="editRow('aset', {{ item.asetid }}, '{{ item.aset|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_aset' item.asetid %}" style="display:inline;">
+        {% for aset in aset_data %}
+        <tr id="row-aset-{{ aset.asetid }}">
+          <td id="aset-{{ aset.asetid }}">{{ aset.list_aset }}</td>
+          <td>{{ aset.elemen5.e5|default:"-" }}</td>
+          <td id="action-aset-{{ aset.asetid }}">
+            <button class="btn-create" onclick="editRow('aset', {{ aset.asetid }}, '{{ aset.list_aset|escapejs }}')">Edit</button>
+            <form method="post" action="{% url 'delete_aset' aset.asetid %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="aset">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="2">Tiada data.</td>
+          <td colspan="3">Tiada data.</td>
         </tr>
         {% endfor %}
       </table>
@@ -84,6 +95,7 @@
       </div>
       <form id="createForm-lokasi" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="lokasi">
         <input type="text" name="list_lokasi" placeholder="Tambah Lokasi Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -99,6 +111,7 @@
             <button class="btn-create" onclick="editRow('lokasi', {{ item.lid }}, '{{ item.list_lokasi|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_lokasi' item.lid %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="lokasi">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -118,6 +131,7 @@
       </div>
       <form id="createForm-e1" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e1">
         <input type="text" name="e1" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -133,6 +147,7 @@
             <button class="btn-create" onclick="editRow('e1', {{ item.e1id }}, '{{ item.e1|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_e1' item.e1id %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="e1">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -152,6 +167,7 @@
       </div>
       <form id="createForm-e2" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e2">
         <input type="text" name="e2" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -167,6 +183,7 @@
             <button class="btn-create" onclick="editRow('e2', {{ item.e2id }}, '{{ item.e2|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_e2' item.e2id %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="e2">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -186,6 +203,7 @@
       </div>
       <form id="createForm-e3" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e3">
         <input type="text" name="e3" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -201,6 +219,7 @@
             <button class="btn-create" onclick="editRow('e3', {{ item.e3id }}, '{{ item.e3|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_e3' item.e3id %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="e3">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -220,6 +239,7 @@
       </div>
       <form id="createForm-e4" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e4">
         <input type="text" name="e4" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -235,6 +255,7 @@
             <button class="btn-create" onclick="editRow('e4', {{ item.e4id }}, '{{ item.e4|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_e4' item.e4id %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="e4">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -254,6 +275,7 @@
       </div>
       <form id="createForm-e5" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e5">
         <input type="text" name="e5" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -269,6 +291,7 @@
             <button class="btn-create" onclick="editRow('e5', {{ item.e5id }}, '{{ item.e5|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_e5' item.e5id %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="e5">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -288,6 +311,7 @@
       </div>
       <form id="createForm-e6" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e6">
         <input type="text" name="e6" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -303,6 +327,7 @@
             <button class="btn-create" onclick="editRow('e6', {{ item.e6id }}, '{{ item.e6|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_e6' item.e6id %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="e6">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -322,6 +347,7 @@
       </div>
       <form id="createForm-e7" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e7">
         <input type="text" name="e7" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -337,6 +363,7 @@
             <button class="btn-create" onclick="editRow('e7', {{ item.e7id }}, '{{ item.e7|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_e7' item.e7id %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="e7">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -356,6 +383,7 @@
       </div>
       <form id="createForm-e8" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e8">
         <input type="text" name="e8" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -371,6 +399,7 @@
             <button class="btn-create" onclick="editRow('e8', {{ item.e8id }}, '{{ item.e8|escapejs }}')">Edit</button>
             <form method="post" action="{% url 'delete_e8' item.e8id %}" style="display:inline;">
               {% csrf_token %}
+              <input type="hidden" name="section" value="e8">
               <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
             </form>
           </td>
@@ -438,6 +467,9 @@ function showSection(sectionName) {
   if (activeLink) {
     activeLink.classList.add('active');
   }
+  
+  // Store the current section in sessionStorage
+  sessionStorage.setItem('currentSection', sectionName);
 }
 
 // Show create form for specific section
@@ -455,12 +487,85 @@ function editRow(sectionName, id, value) {
   const cellId = `${sectionName}-${id}`;
   const actionId = `action-${sectionName}-${id}`;
   
-  document.getElementById(cellId).innerHTML = `
-    <form id="editForm-${sectionName}-${id}" method="post" action="${editUrl}" style="display:inline;">
-      {% csrf_token %}
-      <input type="text" name="${sectionName}" value="${value}" required>
-    </form>
-  `;
+  // Define the correct field names for each section
+  const fieldNames = {
+    'aset': 'aset',
+    'lokasi': 'list_lokasi',
+    'e1': 'e1',
+    'e2': 'e2',
+    'e3': 'e3',
+    'e4': 'e4',
+    'e5': 'e5',
+    'e6': 'e6',
+    'e7': 'e7',
+    'e8': 'e8'
+  };
+  
+  const fieldName = fieldNames[sectionName] || sectionName;
+  
+  // Special handling for aset section to include elemen5 dropdown
+  if (sectionName === 'aset') {
+    // Get the current elemen5 value for this aset
+    const currentElemen5Cell = document.querySelector(`#row-aset-${id} td:nth-child(2)`);
+    const currentElemen5Text = currentElemen5Cell ? currentElemen5Cell.textContent.trim() : '';
+    
+    // Create dropdown options from the existing elemen5 data
+    let dropdownOptions = '<option value="">Pilih Elemen 5</option>';
+    const elemen5Options = document.querySelectorAll('select[name="elemen5_id"] option');
+    elemen5Options.forEach(option => {
+      if (option.value !== '') { // Skip the placeholder option
+        const selected = option.textContent.trim() === currentElemen5Text ? 'selected' : '';
+        dropdownOptions += `<option value="${option.value}" ${selected}>${option.textContent}</option>`;
+      }
+    });
+    
+    // Create a complete form that spans both columns
+    const formHtml = `
+      <form id="editForm-${sectionName}-${id}" method="post" action="${editUrl}" style="display:contents;">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="${sectionName}">
+        <input type="text" name="${fieldName}" value="${value}" required style="width: 100%;">
+        <select name="elemen5_id" style="padding: 4px; width: 100%;">
+          ${dropdownOptions}
+        </select>
+      </form>
+    `;
+    
+    // Update the aset cell (1st column) with the text input
+    document.getElementById(cellId).innerHTML = `
+      <input type="text" name="${fieldName}" value="${value}" required style="width: 100%;" form="editForm-${sectionName}-${id}">
+    `;
+    
+    // Update the elemen5 cell (2nd column) with the dropdown
+    const elemen5Cell = document.querySelector(`#row-aset-${id} td:nth-child(2)`);
+    if (elemen5Cell) {
+      elemen5Cell.innerHTML = `
+        <select name="elemen5_id" style="padding: 4px; width: 100%;" form="editForm-${sectionName}-${id}">
+          ${dropdownOptions}
+        </select>
+      `;
+    }
+    
+    // Add the form element to the page (hidden)
+    const formElement = document.createElement('div');
+    formElement.style.display = 'none';
+    formElement.innerHTML = `
+      <form id="editForm-${sectionName}-${id}" method="post" action="${editUrl}">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="${sectionName}">
+      </form>
+    `;
+    document.body.appendChild(formElement);
+    
+  } else {
+    document.getElementById(cellId).innerHTML = `
+      <form id="editForm-${sectionName}-${id}" method="post" action="${editUrl}" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="${sectionName}">
+        <input type="text" name="${fieldName}" value="${value}" required>
+      </form>
+    `;
+  }
   
   document.getElementById(actionId).innerHTML = `
     <button type="submit" form="editForm-${sectionName}-${id}" class="btn-create">Save</button>
@@ -474,19 +579,56 @@ function cancelEdit(sectionName, id, value) {
   const cellId = `${sectionName}-${id}`;
   const actionId = `action-${sectionName}-${id}`;
   
-  document.getElementById(cellId).textContent = value;
+  if (sectionName === 'aset') {
+    // For aset, we need to restore both the aset name and elemen5
+    const currentElemen5Cell = document.querySelector(`#row-aset-${id} td:nth-child(2)`);
+    const currentElemen5Text = currentElemen5Cell ? currentElemen5Cell.textContent.trim() : '-';
+    
+    // Restore the aset cell
+    document.getElementById(cellId).textContent = value;
+    
+    // Restore the elemen5 cell
+    const elemen5Cell = document.querySelector(`#row-aset-${id} td:nth-child(2)`);
+    if (elemen5Cell) {
+      elemen5Cell.textContent = currentElemen5Text;
+    }
+    
+    // Remove the hidden form element
+    const hiddenForm = document.getElementById(`editForm-${sectionName}-${id}`);
+    if (hiddenForm) {
+      hiddenForm.remove();
+    }
+  } else {
+    document.getElementById(cellId).textContent = value;
+  }
+  
   document.getElementById(actionId).innerHTML = `
     <button class="btn-create" onclick="editRow('${sectionName}', ${id}, '${value.replace(/'/g, "\\'")}')">Edit</button>
     <form method="post" action="${deleteUrl}" style="display:inline;">
       {% csrf_token %}
+      <input type="hidden" name="section" value="${sectionName}">
       <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
     </form>
   `;
 }
 
-// Initialize with dashboard
+// Initialize with dashboard or restore previous section
 document.addEventListener('DOMContentLoaded', function() {
-  showSection('dashboard');
+  // Check if there's a section parameter in the URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlSection = urlParams.get('section');
+  
+  if (urlSection) {
+    showSection(urlSection);
+  } else {
+    // Fallback to sessionStorage or dashboard
+    const savedSection = sessionStorage.getItem('currentSection');
+    if (savedSection) {
+      showSection(savedSection);
+    } else {
+      showSection('dashboard');
+    }
+  }
 });
 </script>
 
