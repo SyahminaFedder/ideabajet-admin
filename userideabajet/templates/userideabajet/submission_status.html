@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Cadangan - Idea Bajet 2027</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .status-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 800px;
+        }
+        
+        .status-badge {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 5px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-container">
+            <div class="text-center mb-4">
+                <h1><i class="fas fa-clipboard-check me-3"></i>Status Cadangan</h1>
+                <p class="lead">Maklumat cadangan bajet anda</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <h5><i class="fas fa-user me-2"></i>Maklumat Penyerah</h5>
+                        <p><strong>Nama:</strong> {{ submission.user_name }}</p>
+                        <p><strong>Emel:</strong> {{ submission.user_email }}</p>
+                        <p><strong>Telefon:</strong> {{ submission.user_phone }}</p>
+                        <p><strong>Tarikh Hantar:</strong> {{ submission.submission_date|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <h5><i class="fas fa-chart-line me-2"></i>Status</h5>
+                        <span class="status-badge status-{{ submission.status }}">
+                            {% if submission.status == 'pending' %}
+                                <i class="fas fa-clock me-2"></i>Dalam Semakan
+                            {% elif submission.status == 'approved' %}
+                                <i class="fas fa-check-circle me-2"></i>Diluluskan
+                            {% elif submission.status == 'rejected' %}
+                                <i class="fas fa-times-circle me-2"></i>Ditolak
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h5><i class="fas fa-project-diagram me-2"></i>Butiran Projek</h5>
+                <p><strong>Tajuk Projek:</strong> {{ submission.project_title }}</p>
+                <p><strong>Jumlah Bajet:</strong> RM {{ submission.budget_amount|floatformat:2 }}</p>
+                <p><strong>Penerangan:</strong></p>
+                <p>{{ submission.project_description }}</p>
+                {% if submission.implementation_period %}
+                <p><strong>Tempoh Pelaksanaan:</strong> {{ submission.implementation_period }}</p>
+                {% endif %}
+            </div>
+            
+            {% if submission.lokasi or submission.elemen5 %}
+            <div class="info-card">
+                <h5><i class="fas fa-map-marker-alt me-2"></i>Kategori</h5>
+                {% if submission.lokasi %}
+                <p><strong>Lokasi:</strong> {{ submission.lokasi.list_lokasi }}</p>
+                {% endif %}
+                {% if submission.elemen5 %}
+                <p><strong>Elemen 5:</strong> {{ submission.elemen5.e5 }}</p>
+                {% endif %}
+                {% if submission.aset %}
+                <p><strong>Aset:</strong> {{ submission.aset.list_aset }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            {% if submission.expected_benefits or submission.target_beneficiaries %}
+            <div class="info-card">
+                <h5><i class="fas fa-plus-circle me-2"></i>Maklumat Tambahan</h5>
+                {% if submission.expected_benefits %}
+                <p><strong>Manfaat yang Dijangka:</strong></p>
+                <p>{{ submission.expected_benefits }}</p>
+                {% endif %}
+                {% if submission.target_beneficiaries %}
+                <p><strong>Sasaran Penerima Manfaat:</strong></p>
+                <p>{{ submission.target_beneficiaries }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'userideabajet:user_home' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Kembali ke Halaman Utama
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+```
+

@@ -1,0 +1,734 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea Bajet 2027</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .wizard-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin: 50px auto;
+            max-width: 1000px;
+        }
+        
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .wizard-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .step.completed {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+        
+        .btn-wizard {
+            background: #3498db;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 25px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-wizard:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+        
+        .starlabel::after {
+            content: " *";
+            color: #FF0000;
+        }
+        
+        .inline-block {
+            display: inline-block;
+            width: 49%;
+            margin-right: 1%;
+        }
+        
+        .inline-block-25 {
+            display: inline-block;
+            width: 25%;
+            margin-right: 1%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wizard-container">
+            <!-- Header -->
+            <div class="wizard-header">
+                <h2>Idea Bajet 2027</h2>
+            </div>
+            
+            <!-- Wizard Steps -->
+            <div class="wizard-steps">
+                <div class="step active" id="step1">1</div>
+                <div class="step" id="step2">2</div>
+                <div class="step" id="step3">3</div>
+            </div>
+            
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+            
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Menghantar cadangan anda...</p>
+            </div>
+            
+            <!-- Wizard Form -->
+            <form id="wizardForm">
+                {% csrf_token %}
+                
+                <!-- Step 1: Demografik -->
+                <div class="form-step active" id="step1-content">
+                    <h3 class="text-center">BAHAGIAN 1: DEMOGRAFIK</h3>
+                    <h5>Maklumat Anda</h5>
+                    
+                    <label for="name" class="starlabel">Nama</label>
+                    <input id="name" name="name" type="text" class="form-control" placeholder="Nama anda" required>
+                    
+                    <label for="email">Emel</label>
+                    <input id="email" name="email" type="text" class="form-control" placeholder="Emel anda (pilihan)" >
+                    
+                    <div class="inline-block">
+                        <label for="jantina" class="starlabel">Jantina:</label>
+                        <select name="jantina" id="jantina" class="form-control" required>
+                            <option value="">---Sila Pilih---</option>
+                            <option value="Lelaki">Lelaki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    
+                    <div class="inline-block">
+                        <label for="bangsa" class="starlabel">Bangsa:</label>
+                        <select name="bangsa" id="bangsa" class="form-control" required>
+                            <option value="">---Sila Pilih---</option>
+                            <option value="Melayu">Melayu</option>
+                            <option value="India">India</option>
+                            <option value="Cina">Cina</option>
+                            <option value="Lain-lain">Lain-lain</option>
+                        </select>
+                    </div>
+                    
+                    <div class="inline-block">
+                        <label for="umur" class="starlabel">Umur:</label>
+                        <select name="umur" id="umur" class="form-control" required>
+                            <option value="">---Sila Pilih---</option>
+                            <option value="18 - 25 tahun">18 - 25 tahun</option>
+                            <option value="26 - 39 tahun">26 - 39 tahun</option>
+                            <option value="40 - 59 tahun">40 - 59 tahun</option>
+                            <option value="60 dan ke atas">60 dan ke atas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="inline-block-25">
+                        <label for="job" class="starlabel">Pekerjaan:</label>
+                        <select onchange="yesnoCheck(this);" name="job" id="job" class="form-control" required>
+                            <option value="">---Sila Pilih---</option>
+                            <option value="Ahli Majlis, MBI">Ahli Majlis, MBI</option>
+                            <option value="Kakitangan MBI">Kakitangan MBI</option>
+                            <option value="Kakitangan Kerajaan">Kakitangan Kerajaan</option>
+                            <option value="Kakitangan Swasta">Kakitangan Swasta</option>
+                            <option value="Bekerja Sendiri">Bekerja Sendiri</option>
+                            <option value="Tidak Bekerja">Tidak Bekerja</option>
+                            <option value="Pelajar">Pelajar</option>
+                            <option value="Pesara">Pesara</option>
+                        </select>
+                    </div>
+                    
+                    <div class="inline-block-25">
+                        <div id="ifYes" style="display: none;">
+                            <label for="zon" class="starlabel">Zon:</label>
+                            <select name="zon" id="zon" class="form-control" >
+                                <option value="">---Sila Pilih---</option>
+                                <option value="Zon 1">Zon 1</option>
+                                <option value="Zon 2">Zon 2</option>
+                                <option value="Zon 3">Zon 3</option>
+                                <option value="Zon 4">Zon 4</option>
+                                <option value="Zon 5">Zon 5</option>
+                                <option value="Zon 6">Zon 6</option>
+                                <option value="Zon 7">Zon 7</option>
+                                <option value="Zon 8">Zon 8</option>
+                                <option value="Zon 9">Zon 9</option>
+                                <option value="Zon 10">Zon 10</option>
+                                <option value="Zon 11">Zon 11</option>
+                                <option value="Zon 12">Zon 12</option>
+                                <option value="Zon 13">Zon 13</option>
+                                <option value="Zon 14">Zon 14</option>
+                                <option value="Zon 15">Zon 15</option>
+                                <option value="Zon 16">Zon 16</option>
+                                <option value="Zon 17">Zon 17</option>
+                                <option value="Zon 18">Zon 18</option>
+                                <option value="Zon 19">Zon 19</option>
+                                <option value="Zon 20">Zon 20</option>
+                                <option value="Zon 21">Zon 21</option>
+                                <option value="Zon 22">Zon 22</option>
+                                <option value="Zon 23">Zon 23</option>
+                                <option value="Zon 24">Zon 24</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <br><br><br><p>(<span style="color:#FF0000">*</span>) Wajib Diisi</p>
+                    
+                    <div class="text-end">
+                        <button type="button" class="btn btn-wizard" onclick="nextStep()">Seterusnya</button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Pilih Keutamaan -->
+                <div class="form-step" id="step2-content">
+                    <h3 class="text-center">BAHAGIAN 2: PILIH KEUTAMAAN ANDA</h3>
+                    <h5>Sila Pilih Sub Elemen Yang Menjadi Keutamaan Anda</h5>
+                    
+                    <div id="content">
+                        <!-- Elemen 1 -->
+                        <div class="card">
+                            <div class="card-header"><label for="el1"><b>ELEMEN 1: IPOH BANDAR TERBERSIH</b></label></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <span id="error"></span>
+                                    <table class="table table-bordered" id="item_table1">
+                                        <tr>
+                                            <th>Pilihan</th>
+                                            <th>Lokasi</th>
+                                            <th>Butiran</th>
+                                            <th><button type="button" name="addEl1" class="btn btn-success btn-sm addEl" data-element="1"><i class="fas fa-plus"></i></button></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Elemen 2 -->
+                        <div class="card">
+                            <div class="card-header"><label for="el2"><b>ELEMEN 2: KEMUDAHAN AWAM DAN TAMAN</b></label></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <span id="error"></span>
+                                    <table class="table table-bordered" id="item_table2">
+                                        <tr>
+                                            <th>Pilihan</th>
+                                            <th>Lokasi</th>
+                                            <th>Butiran</th>
+                                            <th><button type="button" name="addEl2" class="btn btn-success btn-sm addEl" data-element="2"><i class="fas fa-plus"></i></button></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Elemen 3 -->
+                        <div class="card">
+                            <div class="card-header"><label for="el3"><b>ELEMEN 3: KEMUDAHAN INFRASTRUKTUR</b></label></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <span id="error"></span>
+                                    <table class="table table-bordered" id="item_table3">
+                                        <tr>
+                                            <th>Pilihan</th>
+                                            <th>Lokasi</th>
+                                            <th>Butiran</th>
+                                            <th><button type="button" name="addEl3" class="btn btn-success btn-sm addEl" data-element="3"><i class="fas fa-plus"></i></button></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Elemen 4 -->
+                        <div class="card">
+                            <div class="card-header"><label for="el4"><b>ELEMEN 4: BANGUNAN DAN HARTANAH MAJLIS</b></label></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <span id="error"></span>
+                                    <table class="table table-bordered" id="item_table4">
+                                        <tr>
+                                            <th>Pilihan</th>
+                                            <th>Lokasi</th>
+                                            <th>Butiran</th>
+                                            <th><button type="button" name="addEl4" class="btn btn-success btn-sm addEl" data-element="4"><i class="fas fa-plus"></i></button></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Elemen 5 -->
+                        <div class="card">
+                            <div class="card-header"><label for="el5"><b>ELEMEN 5: HARTA MODAL (ASET)</b></label></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <span id="error"></span>
+                                    <table class="table table-bordered" id="item_table5">
+                                        <tr>
+                                            <th>Pilihan</th>
+                                            <th>Aset</th>
+                                            <th>Butiran Peralatan</th>
+                                            <th><button type="button" name="addEl5" class="btn btn-success btn-sm addEl" data-element="5"><i class="fas fa-plus"></i></button></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Elemen 6 -->
+                        <div class="card">
+                            <div class="card-header"><label for="el6"><b>ELEMEN 6: IPOH BANDAR (BANDAR PINTAR)</b></label></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <span id="error"></span>
+                                    <table class="table table-bordered" id="item_table6">
+                                        <tr>
+                                            <th>Pilihan</th>
+                                            <th>Lokasi</th>
+                                            <th>Butiran</th>
+                                            <th><button type="button" name="addEl6" class="btn btn-success btn-sm addEl" data-element="6"><i class="fas fa-plus"></i></button></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Elemen 7 -->
+                        <div class="card">
+                            <div class="card-header"><label for="el7"><b>ELEMEN 7: IPOH BANDAR (BANDAR RENDAH KARBON)</b></label></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <span id="error"></span>
+                                    <table class="table table-bordered" id="item_table7">
+                                        <tr>
+                                            <th>Pilihan</th>
+                                            <th>Lokasi</th>
+                                            <th>Butiran</th>
+                                            <th><button type="button" name="addEl7" class="btn btn-success btn-sm addEl" data-element="7"><i class="fas fa-plus"></i></button></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Elemen 8 -->
+                        <div class="card">
+                            <div class="card-header"><label for="el8"><b>ELEMEN 8: PEMBANGUNAN EKONOMI MASYARAKAT DAN PELANCONGAN</b></label></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <span id="error"></span>
+                                    <table class="table table-bordered" id="item_table8">
+                                        <tr>
+                                            <th>Pilihan</th>
+                                            <th>Lokasi</th>
+                                            <th>Butiran</th>
+                                            <th><button type="button" name="addEl8" class="btn btn-success btn-sm addEl" data-element="8"><i class="fas fa-plus"></i></button></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary me-2" onclick="prevStep()">Sebelumnya</button>
+                        <button type="button" class="btn btn-wizard" onclick="nextStep()">Seterusnya</button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Cadangan -->
+                <div class="form-step" id="step3-content">
+                    <h3 class="text-center">BAHAGIAN 3: CADANGAN ANDA</h3>
+                    <h5>Sila Kemukakan Cadangan Idea Bajet 2027 Anda:-</h5>
+                    
+                    <label for="cad">Cadangan(sekiranya ada):</label>
+                    <textarea id="cad" name="cad" class="form-control" placeholder="Tidak Melebihi 1000 Patah Perkataan" maxlength="100000" rows="6"></textarea>
+                    
+                    <div class="text-end mt-3">
+                        <button type="button" class="btn btn-secondary me-2" onclick="prevStep()">Sebelumnya</button>
+                        <button type="submit" class="btn btn-wizard">
+                            Hantar Cadangan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+        
+        // Initialize wizard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form submission
+            document.getElementById('wizardForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm();
+            });
+            
+            // Add row functionality for dynamic tables
+            document.querySelectorAll('.addEl').forEach(button => {
+                button.addEventListener('click', function() {
+                    const element = this.getAttribute('data-element');
+                    addRow(element);
+                });
+            });
+        });
+        
+        function yesnoCheck(selectElement) {
+            const ifYes = document.getElementById('ifYes');
+            if (selectElement.value === 'Ahli Majlis, MBI') {
+                ifYes.style.display = 'block';
+            } else {
+                ifYes.style.display = 'none';
+            }
+        }
+        
+        function addRow(element) {
+        const table = document.getElementById(`item_table${element}`);
+        const newRow = table.insertRow();
+
+        let pilihanOptions = '';
+        let lokasiOrAsetOptions = ''; 
+        let butiranOptions = '';
+
+        // Generate pilihan options based on element
+        if (element == 1) {
+            pilihanOptions = `
+                <option value="">---Sila Pilih Sub Elemen---</option>
+                {% for elemen1 in e1_data %}
+                <option value="{{ elemen1.e1id }}">{{ elemen1.e1 }}</option>
+                {% endfor %}
+            `;
+        } else if (element == 2) {
+            pilihanOptions = `
+                <option value="">---Sila Pilih Sub Elemen---</option>
+                {% for elemen2 in e2_data %}
+                <option value="{{ elemen2.e2id }}">{{ elemen2.e2 }}</option>
+                {% endfor %}
+            `;
+        } else if (element == 3) {
+            pilihanOptions = `
+                <option value="">---Sila Pilih Sub Elemen---</option>
+                {% for elemen3 in e3_data %}
+                <option value="{{ elemen3.e3id }}">{{ elemen3.e3 }}</option>
+                {% endfor %}
+            `;
+        } else if (element == 4) {
+            pilihanOptions = `
+                <option value="">---Sila  Pilih Sub Elemen---</option>
+                {% for elemen4 in e4_data %}
+                <option value="{{ elemen4.e4id }}">{{ elemen4.e4 }}</option>
+                {% endfor %}
+            `;
+        } else if (element == 5) {
+            pilihanOptions = `
+                <option value="">---Sila Pilih Sub Elemen---</option>
+                {% for elemen5 in e5_data %}
+                <option value="{{ elemen5.e5id }}">{{ elemen5.e5 }}</option>
+                {% endfor %}
+            `;  
+        } else if (element == 6) {
+            pilihanOptions = `
+                <option value="">---Sila Pilih Sub Elemen---</option>
+                {% for elemen6 in e6_data %}
+                <option value="{{ elemen6.e6id }}">{{ elemen6.e6 }}</option>
+                {% endfor %}
+            `;
+        } else if (element == 7) {
+            pilihanOptions = `
+                <option value="">---Sila Pilih Sub Elemen---</option>
+                {% for elemen7 in e7_data %}
+                <option value="{{ elemen7.e7id }}">{{ elemen7.e7 }}</option>
+                {% endfor %}
+            `;
+        } else if (element == 8) {
+            pilihanOptions = `
+                <option value="">---Sila Pilih Sub Elemen---</option>
+                {% for elemen8 in e8_data %}
+                <option value="{{ elemen8.e8id }}">{{ elemen8.e8 }}</option>
+                {% endfor %}
+            `;
+        }
+
+        if (element == 5) {
+            lokasiOrAsetOptions = `
+                <option value="">---Sila Pilih Aset---</option>
+                {% for aset in aset_data %}
+                <option value="{{ aset.asetid }}">{{ aset.list_aset }}</option>
+                {% endfor %}
+            `;
+        } else {
+            lokasiOrAsetOptions = `
+                <option value="">---Sila Pilih Lokasi---</option>
+                {% for lokasi in lokasi_data %}
+                <option value="{{ lokasi.lid }}">{{ lokasi.list_lokasi }}</option>
+                {% endfor %}
+            `;
+        }
+
+        let cell1 = newRow.insertCell(0);
+        cell1.innerHTML = `<select>${pilihanOptions}</select>`;
+
+        let cell2 = newRow.insertCell(1);
+        cell2.innerHTML = `<select>${lokasiOrAsetOptions}</select>`;
+
+        let cell3 = newRow.insertCell(2);
+        cell3.innerHTML = `<input type="text" placeholder="Butiran" />`;
+
+
+                
+        newRow.innerHTML = `
+            <td>
+                <select name="pilihan_${element}[]" class="form-control">
+                    ${pilihanOptions}
+                </select>
+            </td>
+            <td>
+                <select name="${element == 5 ? `aset_${element}[]` : `lokasi_${element}[]`}" class="form-control">
+                    ${lokasiOrAsetOptions}
+                </select>
+            </td>
+            <td>
+                <input type="text" name="butiran_${element}[]" class="form-control" placeholder="Butiran">
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+    }
+        
+        function removeRow(button) {
+            button.closest('tr').remove();
+        }
+        
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateWizard();
+                }
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWizard();
+            }
+        }
+        
+        function updateWizard() {
+            // Update step indicators
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                const stepContent = document.getElementById(`step${i}-content`);
+                
+                if (i < currentStep) {
+                    stepElement.className = 'step completed';
+                    stepContent.className = 'form-step';
+                } else if (i === currentStep) {
+                    stepElement.className = 'step active';
+                    stepContent.className = 'form-step active';
+                } else {
+                    stepElement.className = 'step';
+                    stepContent.className = 'form-step';
+                }
+            }
+        }
+        
+        function validateCurrentStep() {
+            const currentStepElement = document.getElementById(`step${currentStep}-content`);
+            const requiredFields = currentStepElement.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                showAlert('danger', 'Sila isi semua ruangan yang disediakan!');
+            }
+            
+            return isValid;
+        }
+        
+        function submitForm() {
+            const form = document.getElementById('wizardForm');
+            const loading = document.getElementById('loading');
+            const alertContainer = document.getElementById('alertContainer');
+            
+            // Show loading
+            loading.style.display = 'block';
+            form.style.display = 'none';
+            
+            // Collect form data
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (value) {
+                    data[key] = value;
+                }
+            }
+            
+            // Send to server
+            fetch('{% url "userideabajet:submit_budget_idea" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                loading.style.display = 'none';
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    form.reset();
+                    // Redirect to status page
+                    setTimeout(() => {
+                        window.location.href = `/user_ideabajet/status/${result.submission_id}/`;
+                    }, 2000);
+                } else {
+                    showAlert('danger', result.message);
+                    form.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                showAlert('danger', 'Ralat sistem. Sila cuba lagi.');
+                form.style.display = 'block';
+                console.error('Error:', error);
+            });
+        }
+        
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
