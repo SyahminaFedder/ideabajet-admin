@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from . models import Admin, Elemen1, Lokasi, Elemen2, Elemen3, Elemen4, Elemen5, Elemen6, Elemen7, Elemen8, Aset
 # Create your views here.
 
@@ -12,20 +14,31 @@ def login(request):
             admin = Admin.objects.get(adminid=adminid, password=password)
             request.session['id'] = admin.adminid  # simpan dalam session
             request.session['message'] = 'Login berjaya!'
-            return redirect('unified_view')  # redirect to main dashboard
+            return HttpResponseRedirect(f"{reverse('unified_view')}?section=dashboard")  # redirect to main dashboard
         except Admin.DoesNotExist:
             return render(request, 'login.html', {'message': 'Invalid Admin ID or Password',})
     return render (request,"login.html")
 
+
+
 def unified_view(request):
     """Unified view that handles all sections in one template"""
-
+    section = request.GET.get('section', 'dashboard')
+    
     if request.method == 'POST':
         # Handle form submissions for different sections
         if 'aset' in request.POST:
             listaset = request.POST.get('aset')
+            elemen5_id = request.POST.get('elemen5_id')
             if listaset:
-                Aset.objects.create(aset=listaset)
+                aset = Aset.objects.create(list_aset=listaset)
+                if elemen5_id:
+                    try:
+                        elemen5 = Elemen5.objects.get(e5id=elemen5_id)
+                        aset.elemen5 = elemen5
+                        aset.save()
+                    except Elemen5.DoesNotExist:
+                        pass
         elif 'list_lokasi' in request.POST:
             listloc = request.POST.get('list_lokasi')
             if listloc:
@@ -64,13 +77,33 @@ def unified_view(request):
                 Elemen8.objects.create(e8=liste8)
 
         return redirect('unified_view')
-
     
     message = request.session.pop('message', None)
-
+    
+    # Get admin data from session
+    admin = None
+    if 'id' in request.session:
+        try:
+            admin = Admin.objects.get(adminid=request.session['id'])
+        except Admin.DoesNotExist:
+            pass
+    
     # Gather all data
+    # Group aset data by elemen5
+    aset_by_elemen5 = {}
+    for elemen5 in Elemen5.objects.all():
+        aset_list = Aset.objects.filter(elemen5=elemen5)
+        if aset_list.exists():
+            aset_by_elemen5[elemen5] = aset_list
+    
+    # Get aset without elemen5 (for backward compatibility)
+    aset_without_elemen5 = Aset.objects.filter(elemen5__isnull=True)
+    
     context = {
-        'aset_data': Aset.objects.all(),
+        'admin': admin,  # Pass admin data to template
+        'aset_by_elemen5': aset_by_elemen5,
+        'aset_without_elemen5': aset_without_elemen5,
+        'aset_data': Aset.objects.all().order_by('elemen5__e5', 'list_aset'),  # Order by elemen5 then by aset name
         'lokasi_data': Lokasi.objects.all(),
         'e1_data': Elemen1.objects.all(),
         'e2_data': Elemen2.objects.all(),
@@ -81,97 +114,152 @@ def unified_view(request):
         'e7_data': Elemen7.objects.all(),
         'e8_data': Elemen8.objects.all(),
         'message': message,
+        'current_section': section,
     }
-
+    
     return render(request, 'main.html', context)
 
-
 def logout(request):
-    try:
-        del request.session['id']
-    except KeyError:
-        pass
-    return redirect('login')
+    if request.method == 'POST':
+        try:
+            request.session['message'] = 'Logout berjaya!'
+            del request.session['id'] 
+        except KeyError:
+            pass 
+        return redirect('login')
+    else:
+        # Handle GET requests as well
+        try:
+            request.session['message'] = 'Logout berjaya!'
+            del request.session['id'] 
+        except KeyError:
+            pass 
+        return redirect('login')
 
 # Edit views
 def edit_aset(request, asetid):
     if request.method == 'POST':
         aset = Aset.objects.get(asetid=asetid)
-        aset.aset = request.POST.get('aset')
-        aset.save()
-        return redirect('unified_view')
+        aset_value = request.POST.get('aset')
+        elemen5_id = request.POST.get('elemen5_id')
+        
+        if aset_value:  # Only update if value is not empty
+            aset.list_aset = aset_value
+            aset.save()
+        
+        # Handle elemen5 update
+        if elemen5_id:
+            try:
+                elemen5 = Elemen5.objects.get(e5id=elemen5_id)
+                aset.elemen5 = elemen5
+                aset.save()
+            except Elemen5.DoesNotExist:
+                pass
+        elif elemen5_id == '':  # Empty string means no elemen5 selected
+            aset.elemen5 = None
+            aset.save()
+            
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_lokasi(request, lid):
     if request.method == 'POST':
         lokasi = Lokasi.objects.get(lid=lid)
-        lokasi.list_lokasi = request.POST.get('list_lokasi')
-        lokasi.save()
-        return redirect('unified_view')
+        lokasi_value = request.POST.get('list_lokasi')
+        if lokasi_value:  # Only update if value is not empty
+            lokasi.list_lokasi = lokasi_value
+            lokasi.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_e1(request, e1id):
     if request.method == 'POST':
         e1 = Elemen1.objects.get(e1id=e1id)
-        e1.e1 = request.POST.get('e1')
-        e1.save()
-        return redirect('unified_view')
+        e1_value = request.POST.get('e1')
+        if e1_value:  # Only update if value is not empty
+            e1.e1 = e1_value
+            e1.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_e2(request, e2id):
     if request.method == 'POST':
         e2 = Elemen2.objects.get(e2id=e2id)
-        e2.e2 = request.POST.get('e2')
-        e2.save()
-        return redirect('unified_view')
+        e2_value = request.POST.get('e2')
+        if e2_value:  # Only update if value is not empty
+            e2.e2 = e2_value
+            e2.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_e3(request, e3id):
     if request.method == 'POST':
         e3 = Elemen3.objects.get(e3id=e3id)
-        e3.e3 = request.POST.get('e3')
-        e3.save()
-        return redirect('unified_view')
+        e3_value = request.POST.get('e3')
+        if e3_value:  # Only update if value is not empty
+            e3.e3 = e3_value
+            e3.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_e4(request, e4id):
     if request.method == 'POST':
         e4 = Elemen4.objects.get(e4id=e4id)
-        e4.e4 = request.POST.get('e4')
-        e4.save()
-        return redirect('unified_view')
+        e4_value = request.POST.get('e4')
+        if e4_value:  # Only update if value is not empty
+            e4.e4 = e4_value
+            e4.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_e5(request, e5id):
     if request.method == 'POST':
         e5 = Elemen5.objects.get(e5id=e5id)
-        e5.e5 = request.POST.get('e5')
-        e5.save()
-        return redirect('unified_view')
+        e5_value = request.POST.get('e5')
+        if e5_value:  # Only update if value is not empty
+            e5.e5 = e5_value
+            e5.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_e6(request, e6id):
     if request.method == 'POST':
         e6 = Elemen6.objects.get(e6id=e6id)
-        e6.e6 = request.POST.get('e6')
-        e6.save()
-        return redirect('unified_view')
+        e6_value = request.POST.get('e6')
+        if e6_value:  # Only update if value is not empty
+            e6.e6 = e6_value
+            e6.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_e7(request, e7id):
     if request.method == 'POST':
         e7 = Elemen7.objects.get(e7id=e7id)
-        e7.e7 = request.POST.get('e7')
-        e7.save()
-        return redirect('unified_view')
+        e7_value = request.POST.get('e7')
+        if e7_value:  # Only update if value is not empty
+            e7.e7 = e7_value
+            e7.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def edit_e8(request, e8id):
     if request.method == 'POST':
         e8 = Elemen8.objects.get(e8id=e8id)
-        e8.e8 = request.POST.get('e8')
-        e8.save()
-        return redirect('unified_view')
+        e8_value = request.POST.get('e8')
+        if e8_value:  # Only update if value is not empty
+            e8.e8 = e8_value
+            e8.save()
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 # Delete views
@@ -179,68 +267,78 @@ def delete_aset(request, asetid):
     if request.method == 'POST':
         aset = Aset.objects.get(asetid=asetid)
         aset.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_lokasi(request, lid):
     if request.method == 'POST':
         lokasi = Lokasi.objects.get(lid=lid)
         lokasi.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_e1(request, e1id):
     if request.method == 'POST':
         e1 = Elemen1.objects.get(e1id=e1id)
         e1.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_e2(request, e2id):
     if request.method == 'POST':
         e2 = Elemen2.objects.get(e2id=e2id)
         e2.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_e3(request, e3id):
     if request.method == 'POST':
         e3 = Elemen3.objects.get(e3id=e3id)
         e3.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_e4(request, e4id):
     if request.method == 'POST':
         e4 = Elemen4.objects.get(e4id=e4id)
         e4.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_e5(request, e5id):
     if request.method == 'POST':
         e5 = Elemen5.objects.get(e5id=e5id)
         e5.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_e6(request, e6id):
     if request.method == 'POST':
         e6 = Elemen6.objects.get(e6id=e6id)
         e6.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_e7(request, e7id):
     if request.method == 'POST':
         e7 = Elemen7.objects.get(e7id=e7id)
         e7.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')
 
 def delete_e8(request, e8id):
     if request.method == 'POST':
         e8 = Elemen8.objects.get(e8id=e8id)
         e8.delete()
-        return redirect('unified_view')
+        section = request.POST.get('section', 'dashboard')
+        return HttpResponseRedirect(f"{reverse('unified_view')}?section={section}")
     return redirect('unified_view')  

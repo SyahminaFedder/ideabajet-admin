@@ -478,16 +478,8 @@ function cancelEdit(sectionName, id, value) {
   }
   
   document.getElementById(actionId).innerHTML = `
-    <div class="action-buttons">
-      <button class="btn-edit" onclick="editRow('${sectionName}', ${id}, '${value.replace(/'/g, "\\'")}')">
-        <span class="btn-icon">✏️</span>
-        Edit
-      </button>
-      <button class="btn-delete-action" onclick="showDeleteConfirmation('${sectionName}', ${id}, '${value.replace(/'/g, "\\'")}')">
-        <span class="btn-icon">🗑️</span>
-        Delete
-      </button>
-    </div>
+    <button class="btn-create" onclick="editRow('${sectionName}', ${id}, '${value.replace(/'/g, "\\'")}')">Edit</button>
+    <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('${sectionName}', ${id}, '${value.replace(/'/g, "\\'")}')">Delete</button>
   `;
 }
 

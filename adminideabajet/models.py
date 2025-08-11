@@ -13,6 +13,7 @@ class Lokasi(models.Model):
 class Aset(models.Model):
     asetid = models.AutoField(primary_key=True)
     list_aset = models.CharField(max_length=255)
+    elemen5 = models.ForeignKey('Elemen5', on_delete=models.CASCADE, null=True, blank=True)
 
 class Elemen1(models.Model):
     e1id = models.AutoField(primary_key=True)

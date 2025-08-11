@@ -4,40 +4,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Idea Bajet 2027 - Unified</title>
+  <title>Idea Bajet - Admin</title>
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="{% static 'js/main.js' %}"></script>
 </head>
 <body>
 
-<<<<<<< Updated upstream
-<header class="header">
-  <div class="header-text" style="display: flex; justify-content: space-between; align-items: center;">
-    <h2><b>Idea Bajet 2027</b></h2>
-    <form method="post" action="{% url 'logout' %}">
-      {% csrf_token %}
-      <button type="submit" class="btn-create logout-btn" style="background:#e74c3c;">Logout</button>
-    </form>
-  </div>
-</header>
-
-<!-- Navigation Section -->
-<div class="container">
-  <div class="sidebar">
-    <ul>
-      <li><a href="#" onclick="showSection('dashboard')" class="nav-link" data-section="dashboard">DASHBOARD</a></li>
-      <li><a href="#" onclick="showSection('aset')" class="nav-link" data-section="aset">ASET</a></li>
-      <li><a href="#" onclick="showSection('lokasi')" class="nav-link" data-section="lokasi">LOKASI</a></li>
-      <li><a href="#" onclick="showSection('e1')" class="nav-link" data-section="e1">ELEMEN 1: IPOH BANDAR TERBERSIH</a></li>
-      <li><a href="#" onclick="showSection('e2')" class="nav-link" data-section="e2">ELEMEN 2: KEMUDAHAN AWAM DAN TAMAN</a></li>
-      <li><a href="#" onclick="showSection('e3')" class="nav-link" data-section="e3">ELEMEN 3: KEMUDAHAN INFRASTRUKTUR</a></li>
-      <li><a href="#" onclick="showSection('e4')" class="nav-link" data-section="e4">ELEMEN 4: BANGUNAN DAN HARTANAH MAJLIS</a></li>
-      <li><a href="#" onclick="showSection('e5')" class="nav-link" data-section="e5">ELEMEN 5: HARTA MODAL (ASET)</a></li>
-      <li><a href="#" onclick="showSection('e6')" class="nav-link" data-section="e6">ELEMEN 6: IPOH BANDAR (BANDAR PINTAR)</a></li>
-      <li><a href="#" onclick="showSection('e7')" class="nav-link" data-section="e7">ELEMEN 7: IPOH BANDAR (BANDAR RENDAH KARBON)</a></li>
-      <li><a href="#" onclick="showSection('e8')" class="nav-link" data-section="e8">ELEMEN 8: PEMBANGUNAN EKONOMI MASYARAKAT DAN PELANCONGAN</a></li>
-=======
 <div class="container">
   <div class="sidebar">
     <div class="sidebar-header">
@@ -48,7 +21,7 @@
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
           </svg>
         </div>
-        <p>Welcome, Aimi Syafiqa</p>
+        <p>Welcome, {{ admin.name|default:"Admin" }}</p>
       </div>
     </div>
     <ul class="nav-menu">
@@ -69,18 +42,16 @@
           <button type="submit" class="nav-link logout-btn">Logout</button>
         </form>
       </li>
->>>>>>> Stashed changes
     </ul>
   </div>
 
   <div class="main-content">
-
-    <!-- Message container -->
+     <!-- Message container -->
    {% if message %}
-  <div id="message-box" style="padding:10px; background-color:#d4edda; color:#155724; border:1px solid #c3e6cb; margin-bottom: 15px;">
-    {{ message }}
-  </div>
-  {% endif %}
+   <div id="message-box" style="padding:10px; background-color:#d4edda; color:#155724; border:1px solid #c3e6cb; margin-bottom: 15px;">
+     {{ message }}
+   </div>
+   {% endif %}
 
     <!-- Dashboard Section -->
     <div id="dashboard" class="content-section active">
@@ -145,77 +116,46 @@
           </div>
         </div>
       </div>
-
-      <!-- Additional Dashboard Content -->
-      <div class="dashboard-bottom">
-        <div class="recent-activity">
-          <h3>Recent Activity</h3>
-          <div class="activity-list">
-            <div class="activity-item">
-              <div class="activity-icon">➕</div>
-              <div class="activity-content">
-                <p>New element added to Elemen 3</p>
-                <span class="activity-time">2 minutes ago</span>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon">✏️</div>
-              <div class="activity-content">
-                <p>Updated Aset information</p>
-                <span class="activity-time">15 minutes ago</span>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon">👤</div>
-              <div class="activity-content">
-                <p>New user registered</p>
-                <span class="activity-time">1 hour ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="quick-actions">
-          <h3>Quick Actions</h3>
-          <div class="action-buttons">
-            <button class="action-btn">Add New Element</button>
-            <button class="action-btn">Generate Report</button>
-            <button class="action-btn">Export Data</button>
-            <button class="action-btn">System Backup</button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Aset Section -->
     <div id="aset" class="content-section">
+      <h2 class="dashboard-title">Aset Management</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('aset')">Create</button>
       </div>
       <form id="createForm-aset" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="aset">
+        <select name="elemen5_id" required style="margin-bottom: 10px; padding: 8px; width: 100%;">
+          <option value="">Pilih Elemen 5</option>
+          {% for elemen5 in e5_data %}
+          <option value="{{ elemen5.e5id }}">{{ elemen5.e5 }}</option>
+          {% endfor %}
+        </select>
         <input type="text" name="aset" placeholder="Tambah Aset Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
+      
+      <!-- Single table with 3 columns -->
       <table class="table table-bordered">
         <tr>
-          <th>Senarai Aset</th>
+          <th>Aset</th>
+          <th>Elemen 5</th>
           <th>Action</th>
         </tr>
-        {% for item in aset_data %}
-        <tr id="row-aset-{{ item.asetid }}">
-          <td id="aset-{{ item.asetid }}">{{ item.aset }}</td>
-          <td id="action-aset-{{ item.asetid }}">
-            <button class="btn-create" onclick="editRow('aset', {{ item.asetid }}, '{{ item.aset|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_aset' item.asetid %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+        {% for aset in aset_data %}
+        <tr id="row-aset-{{ aset.asetid }}">
+          <td id="aset-{{ aset.asetid }}">{{ aset.list_aset }}</td>
+          <td>{{ aset.elemen5.e5|default:"-" }}</td>
+          <td id="action-aset-{{ aset.asetid }}">
+            <button class="btn-create" onclick="editRow('aset', {{ aset.asetid }}, '{{ aset.list_aset|escapejs }}')">Edit</button>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('aset', {{ aset.asetid }}, '{{ aset.list_aset|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="2">Tiada data.</td>
+          <td colspan="3">Tiada data.</td>
         </tr>
         {% endfor %}
       </table>
@@ -223,11 +163,13 @@
 
     <!-- Lokasi Section -->
     <div id="lokasi" class="content-section">
+      <h2 class="dashboard-title">Lokasi Management</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('lokasi')">Create</button>
       </div>
       <form id="createForm-lokasi" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="lokasi">
         <input type="text" name="list_lokasi" placeholder="Tambah Lokasi Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -241,10 +183,7 @@
           <td id="lokasi-{{ item.lid }}">{{ item.list_lokasi }}</td>
           <td id="action-lokasi-{{ item.lid }}">
             <button class="btn-create" onclick="editRow('lokasi', {{ item.lid }}, '{{ item.list_lokasi|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_lokasi' item.lid %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('lokasi', {{ item.lid }}, '{{ item.list_lokasi|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -255,13 +194,15 @@
       </table>
     </div>
 
-    <!-- Elemen1 Section -->
+    <!-- E1 Section -->
     <div id="e1" class="content-section">
+      <h2 class="dashboard-title">Elemen 1: Ipoh Bandar Terbersih</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e1')">Create</button>
       </div>
       <form id="createForm-e1" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e1">
         <input type="text" name="e1" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -275,10 +216,7 @@
           <td id="e1-{{ item.e1id }}">{{ item.e1 }}</td>
           <td id="action-e1-{{ item.e1id }}">
             <button class="btn-create" onclick="editRow('e1', {{ item.e1id }}, '{{ item.e1|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_e1' item.e1id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('e1', {{ item.e1id }}, '{{ item.e1|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -289,13 +227,15 @@
       </table>
     </div>
 
-    <!-- Elemen2 Section -->
+    <!-- E2 Section -->
     <div id="e2" class="content-section">
+      <h2 class="dashboard-title">Elemen 2: Kemudahan Awam dan Taman</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e2')">Create</button>
       </div>
       <form id="createForm-e2" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e2">
         <input type="text" name="e2" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -309,10 +249,7 @@
           <td id="e2-{{ item.e2id }}">{{ item.e2 }}</td>
           <td id="action-e2-{{ item.e2id }}">
             <button class="btn-create" onclick="editRow('e2', {{ item.e2id }}, '{{ item.e2|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_e2' item.e2id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('e2', {{ item.e2id }}, '{{ item.e2|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -323,13 +260,15 @@
       </table>
     </div>
 
-    <!-- Elemen3 Section -->
+    <!-- E3 Section -->
     <div id="e3" class="content-section">
+      <h2 class="dashboard-title">Elemen 3: Kemudahan Infrastruktur</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e3')">Create</button>
       </div>
       <form id="createForm-e3" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e3">
         <input type="text" name="e3" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -343,10 +282,7 @@
           <td id="e3-{{ item.e3id }}">{{ item.e3 }}</td>
           <td id="action-e3-{{ item.e3id }}">
             <button class="btn-create" onclick="editRow('e3', {{ item.e3id }}, '{{ item.e3|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_e3' item.e3id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('e3', {{ item.e3id }}, '{{ item.e3|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -357,13 +293,15 @@
       </table>
     </div>
 
-    <!-- Elemen4 Section -->
+    <!-- E4 Section -->
     <div id="e4" class="content-section">
+      <h2 class="dashboard-title">Elemen 4: Bangunan dan Hartanah Majlis</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e4')">Create</button>
       </div>
       <form id="createForm-e4" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e4">
         <input type="text" name="e4" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -377,10 +315,7 @@
           <td id="e4-{{ item.e4id }}">{{ item.e4 }}</td>
           <td id="action-e4-{{ item.e4id }}">
             <button class="btn-create" onclick="editRow('e4', {{ item.e4id }}, '{{ item.e4|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_e4' item.e4id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('e4', {{ item.e4id }}, '{{ item.e4|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -391,13 +326,15 @@
       </table>
     </div>
 
-    <!-- Elemen5 Section -->
+    <!-- E5 Section -->
     <div id="e5" class="content-section">
+      <h2 class="dashboard-title">Elemen 5: Harta Modal (Aset)</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e5')">Create</button>
       </div>
       <form id="createForm-e5" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e5">
         <input type="text" name="e5" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -411,10 +348,7 @@
           <td id="e5-{{ item.e5id }}">{{ item.e5 }}</td>
           <td id="action-e5-{{ item.e5id }}">
             <button class="btn-create" onclick="editRow('e5', {{ item.e5id }}, '{{ item.e5|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_e5' item.e5id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('e5', {{ item.e5id }}, '{{ item.e5|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -425,13 +359,15 @@
       </table>
     </div>
 
-    <!-- Elemen6 Section -->
+    <!-- E6 Section -->
     <div id="e6" class="content-section">
+      <h2 class="dashboard-title">Elemen 6: Ipoh Bandar (Bandar Pintar)</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e6')">Create</button>
       </div>
       <form id="createForm-e6" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e6">
         <input type="text" name="e6" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -445,10 +381,7 @@
           <td id="e6-{{ item.e6id }}">{{ item.e6 }}</td>
           <td id="action-e6-{{ item.e6id }}">
             <button class="btn-create" onclick="editRow('e6', {{ item.e6id }}, '{{ item.e6|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_e6' item.e6id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('e6', {{ item.e6id }}, '{{ item.e6|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -459,13 +392,15 @@
       </table>
     </div>
 
-    <!-- Elemen7 Section -->
+    <!-- E7 Section -->
     <div id="e7" class="content-section">
+      <h2 class="dashboard-title">Elemen 7: Ipoh Bandar (Bandar Rendah Karbon)</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e7')">Create</button>
       </div>
       <form id="createForm-e7" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e7">
         <input type="text" name="e7" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -479,10 +414,7 @@
           <td id="e7-{{ item.e7id }}">{{ item.e7 }}</td>
           <td id="action-e7-{{ item.e7id }}">
             <button class="btn-create" onclick="editRow('e7', {{ item.e7id }}, '{{ item.e7|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_e7' item.e7id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('e7', {{ item.e7id }}, '{{ item.e7|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -493,13 +425,15 @@
       </table>
     </div>
 
-    <!-- Elemen8 Section -->
+    <!-- E8 Section -->
     <div id="e8" class="content-section">
+      <h2 class="dashboard-title">Elemen 8: Pembangunan Ekonomi Masyarakat dan Pelancongan</h2>
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn-create" onclick="showForm('e8')">Create</button>
       </div>
       <form id="createForm-e8" class="create-form" method="post" style="display:none;">
         {% csrf_token %}
+        <input type="hidden" name="section" value="e8">
         <input type="text" name="e8" placeholder="Tambah Elemen Baharu" required>
         <button type="submit" class="btn-create">Save</button>
       </form>
@@ -513,10 +447,7 @@
           <td id="e8-{{ item.e8id }}">{{ item.e8 }}</td>
           <td id="action-e8-{{ item.e8id }}">
             <button class="btn-create" onclick="editRow('e8', {{ item.e8id }}, '{{ item.e8|escapejs }}')">Edit</button>
-            <form method="post" action="{% url 'delete_e8' item.e8id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-            </form>
+            <button class="btn-create" style="background:#e74c3c;" onclick="showDeleteConfirmation('e8', {{ item.e8id }}, '{{ item.e8|escapejs }}')">Delete</button>
           </td>
         </tr>
         {% empty %}
@@ -528,284 +459,6 @@
     </div>
   </div>
 </div>
-
-<script>
-//Display message for 3 seconds
-  setTimeout(function() {
-      var msg = document.getElementById('message-box');
-      if (msg) {
-        msg.style.display = 'none';
-      }
-    }, 3000);
-
-// Global variables for URLs
-const urls = {
-  edit: {
-    aset: "{% url 'edit_aset' 0 %}",
-    lokasi: "{% url 'edit_lokasi' 0 %}",
-    e1: "{% url 'edit_e1' 0 %}",
-    e2: "{% url 'edit_e2' 0 %}",
-    e3: "{% url 'edit_e3' 0 %}",
-    e4: "{% url 'edit_e4' 0 %}",
-    e5: "{% url 'edit_e5' 0 %}",
-    e6: "{% url 'edit_e6' 0 %}",
-    e7: "{% url 'edit_e7' 0 %}",
-    e8: "{% url 'edit_e8' 0 %}"
-  },
-  delete: {
-    aset: "{% url 'delete_aset' 0 %}",
-    lokasi: "{% url 'delete_lokasi' 0 %}",
-    e1: "{% url 'delete_e1' 0 %}",
-    e2: "{% url 'delete_e2' 0 %}",
-    e3: "{% url 'delete_e3' 0 %}",
-    e4: "{% url 'delete_e4' 0 %}",
-    e5: "{% url 'delete_e5' 0 %}",
-    e6: "{% url 'delete_e6' 0 %}",
-    e7: "{% url 'delete_e7' 0 %}",
-    e8: "{% url 'delete_e8' 0 %}"
-  }
-};
-
-// Show specific section and update navigation
-function showSection(sectionName) {
-  // Hide all sections
-  const sections = document.querySelectorAll('.content-section');
-  sections.forEach(section => {
-    section.classList.remove('active');
-  });
-  
-  // Show selected section
-  const selectedSection = document.getElementById(sectionName);
-  if (selectedSection) {
-    selectedSection.classList.add('active');
-  }
-  
-  // Update navigation active state
-  const navLinks = document.querySelectorAll('.nav-link');
-  navLinks.forEach(link => {
-    link.classList.remove('active');
-  });
-  
-  const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
-  if (activeLink) {
-    activeLink.classList.add('active');
-  }
-<<<<<<< Updated upstream
-=======
-  
-  // Store the current section in sessionStorage
-  sessionStorage.setItem('currentSection', sectionName);
-  
-  // Initialize charts if dashboard is shown
-  if (sectionName === 'dashboard') {
-    setTimeout(() => {
-      initializeCharts();
-    }, 100);
-  }
->>>>>>> Stashed changes
-}
-
-// Show create form for specific section
-function showForm(sectionName) {
-  const formId = `createForm-${sectionName}`;
-  const form = document.getElementById(formId);
-  if (form) {
-    form.style.display = 'block';
-  }
-}
-
-// Edit row function
-function editRow(sectionName, id, value) {
-  const editUrl = urls.edit[sectionName].replace('0', id);
-  const cellId = `${sectionName}-${id}`;
-  const actionId = `action-${sectionName}-${id}`;
-  
-  document.getElementById(cellId).innerHTML = `
-    <form id="editForm-${sectionName}-${id}" method="post" action="${editUrl}" style="display:inline;">
-      {% csrf_token %}
-      <input type="text" name="${sectionName}" value="${value}" required>
-    </form>
-  `;
-  
-  document.getElementById(actionId).innerHTML = `
-    <button type="submit" form="editForm-${sectionName}-${id}" class="btn-create">Save</button>
-    <button type="button" class="btn-create" style="background:#e74c3c;" onclick="cancelEdit('${sectionName}', ${id}, '${value.replace(/'/g, "\\'")}')">Cancel</button>
-  `;
-}
-
-// Cancel edit function
-function cancelEdit(sectionName, id, value) {
-  const deleteUrl = urls.delete[sectionName].replace('0', id);
-  const cellId = `${sectionName}-${id}`;
-  const actionId = `action-${sectionName}-${id}`;
-  
-  document.getElementById(cellId).textContent = value;
-  document.getElementById(actionId).innerHTML = `
-    <button class="btn-create" onclick="editRow('${sectionName}', ${id}, '${value.replace(/'/g, "\\'")}')">Edit</button>
-    <form method="post" action="${deleteUrl}" style="display:inline;">
-      {% csrf_token %}
-      <button type="submit" class="btn-create" style="background:#e74c3c;">Delete</button>
-    </form>
-  `;
-}
-
-<<<<<<< Updated upstream
-// Initialize with dashboard
-document.addEventListener('DOMContentLoaded', function() {
-  showSection('dashboard');
-=======
-// Initialize charts
-function initializeCharts() {
-  // Visitor Chart (Pie Chart)
-  const visitorCtx = document.getElementById('visitorChart');
-  if (visitorCtx) {
-    new Chart(visitorCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Desktop', 'Mobile', 'Tablet'],
-        datasets: [{
-          data: [65, 25, 10],
-          backgroundColor: ['#3498db', '#e74c3c', '#f39c12'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
-        }
-      }
-    });
-  }
-
-  // Revenue Chart (Line Chart)
-  const revenueCtx = document.getElementById('revenueChart');
-  if (revenueCtx) {
-    new Chart(revenueCtx, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [{
-          label: 'Revenue',
-          data: [12, 19, 3, 5, 2, 3],
-          borderColor: '#27ae60',
-          backgroundColor: 'rgba(39, 174, 96, 0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
-
-  // Element Chart (Bar Chart)
-  const elementCtx = document.getElementById('elementChart');
-  if (elementCtx) {
-    new Chart(elementCtx, {
-      type: 'bar',
-      data: {
-        labels: ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8'],
-        datasets: [{
-          label: 'Elements',
-          data: [12, 19, 3, 5, 2, 3, 8, 15],
-          backgroundColor: [
-            '#3498db', '#e74c3c', '#f39c12', '#9b59b6',
-            '#1abc9c', '#34495e', '#e67e22', '#95a5a6'
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
-
-  // Trend Chart (Area Chart)
-  const trendCtx = document.getElementById('trendChart');
-  if (trendCtx) {
-    new Chart(trendCtx, {
-      type: 'line',
-      data: {
-        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-        datasets: [{
-          label: 'Trends',
-          data: [4, 8, 15, 16],
-          borderColor: '#9b59b6',
-          backgroundColor: 'rgba(155, 89, 182, 0.2)',
-          tension: 0.4,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
-}
-
-// Initialize with dashboard or restore previous section
-document.addEventListener('DOMContentLoaded', function() {
-  // Check if there's a section parameter in the URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const urlSection = urlParams.get('section');
-  
-  if (urlSection) {
-    showSection(urlSection);
-  } else {
-    // Fallback to sessionStorage or dashboard
-    const savedSection = sessionStorage.getItem('currentSection');
-    if (savedSection) {
-      showSection(savedSection);
-    } else {
-      showSection('dashboard');
-    }
-  }
-  
-  // Initialize charts when dashboard is shown
-  if (document.getElementById('dashboard').classList.contains('active')) {
-    initializeCharts();
-  }
->>>>>>> Stashed changes
-});
-</script>
 
 </body>
 </html> 
